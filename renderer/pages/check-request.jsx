@@ -65,9 +65,6 @@ function AddNewPage(props) {
         <div>
           <CheckRequestForm />
         </div>
-        <section className={classes.spaceTop}>
-          <Footer invert />
-        </section>
         <Notification />
       </div>
     </React.Fragment>
