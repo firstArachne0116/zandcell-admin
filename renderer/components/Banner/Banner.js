@@ -19,7 +19,6 @@ function Banner(props) {
   const text = useText();
   const elem = useRef(null);
   const signInState = useSelector(state => state.main.authReducer.state);
-  const userData = useSelector(state => state.main.authReducer.decodedToken);
 
   const { t } = props;
   // const theme = useTheme();
@@ -46,14 +45,22 @@ function Banner(props) {
     window.addEventListener('scroll', handleScroll);
   });
 
-  const addNew = () => {
+  const handleSetting = () => {
     if (signInState === '') {
       router.push('/login');
     } else {
-      const newProjectId = userData.userName + '-' + Date.now();
       router.push({
-        pathname: '/new',
-        query: { projectId: newProjectId }
+        pathname: '/setting',
+      });
+    }
+  };
+
+  const handleCheckRequests = () => {
+    if (signInState === '') {
+      router.push('/login');
+    } else {
+      router.push({
+        pathname: '/contact',
       });
     }
   };
@@ -80,11 +87,11 @@ function Banner(props) {
                 </Typography>
               </div>
               <div className={classes.btnArea}>
-                <Button variant="contained" color="secondary" size="large">
-                  {t('crypto-landing:banner_getstarted')}
+                <Button variant="contained" onClick={handleCheckRequests} color="secondary" size="large">
+                  {t('crypto-landing:check_requests')}
                 </Button>
-                <Button variant="outlined" onClick={addNew} className={classes.invert} size="large">
-                  Add New Commodity Request
+                <Button variant="outlined" onClick={handleSetting} className={classes.invert} size="large">
+                  {t('crypto-landing:setting')}
                 </Button>
               </div>
             </Grid>

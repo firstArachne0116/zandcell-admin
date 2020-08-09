@@ -4,7 +4,7 @@ const initialState = {
   isBusy: true
 };
 
-const apiReducer = function (state = initialState, action) {
+const apiReducer = (state = initialState, action) => {
   switch (action.type) {
     case Actions.SET_API_BUSY:
     {

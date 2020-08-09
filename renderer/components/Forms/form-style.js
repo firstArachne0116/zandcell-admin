@@ -113,6 +113,11 @@ const contactStyles = makeStyles(theme => ({
       alignItems: 'center'
     },
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 80,
+    width: '100%',
+  },
   flex: {},
   btnArea: {
     marginTop: theme.spacing(5),
@@ -382,7 +387,18 @@ const contactStyles = makeStyles(theme => ({
   decoSm: {
     textAlign: 'center',
     marginTop: theme.spacing(10)
-  }
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
 }));
 
 export default contactStyles;

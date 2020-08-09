@@ -66,7 +66,8 @@ function Login(props) {
     console.log('data submited');
     dispatch(Actions.signIn({
       email: values.email,
-      password: values.password
+      password: values.password,
+      userType: 0
     }));
     // dispatch(Actions.showNotification('This is test notification'));
     // router.push('/');
