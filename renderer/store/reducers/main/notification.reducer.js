@@ -7,7 +7,7 @@ const initialState = {
   isLoading: false,
 };
 
-const notificationReducer = function (state = initialState, action) {
+const notificationReducer = (state = initialState, action) => {
   switch (action.type) {
     case Actions.SHOW_NOTIFICATION:
     {

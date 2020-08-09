@@ -113,6 +113,10 @@ const contactStyles = makeStyles(theme => ({
       alignItems: 'center'
     },
   },
+  formControl: {
+    minWidth: 80,
+    width: '100%',
+  },
   flex: {},
   btnArea: {
     marginTop: theme.spacing(5),
@@ -390,6 +394,17 @@ const contactStyles = makeStyles(theme => ({
   tableContainer: {
     maxHeight: 440,
   },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  }
 }));
 
 export default contactStyles;

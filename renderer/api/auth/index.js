@@ -12,11 +12,7 @@ export const signUp = (userData) => {
   });
 };
 
-export const signIn = ({ email, password }) => {
-  const user = {
-    email,
-    password,
-  };
+export const signIn = (user) => {
   const apiUrl = apiConfig.baseUrl + apiModule + 'signIn';
 
   console.log(user);
