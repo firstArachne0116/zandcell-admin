@@ -382,7 +382,14 @@ const contactStyles = makeStyles(theme => ({
   decoSm: {
     textAlign: 'center',
     marginTop: theme.spacing(10)
-  }
+  },
+  tableRoot: {
+    width: '98%',
+    margin: 'auto'
+  },
+  tableContainer: {
+    maxHeight: 440,
+  },
 }));
 
 export default contactStyles;

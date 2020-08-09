@@ -52,7 +52,7 @@ function Banner(props) {
     } else {
       const newProjectId = userData.userName + '-' + Date.now();
       router.push({
-        pathname: '/new',
+        pathname: '/check-request',
         query: { projectId: newProjectId }
       });
     }
