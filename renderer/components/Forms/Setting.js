@@ -52,6 +52,12 @@ const newDocType = {
   isActive: false,
 };
 
+const newUser = {
+  name: '',
+  email: '',
+  phone: '',
+};
+
 function NewRequest() {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -62,10 +68,14 @@ function NewRequest() {
   const [settingType, setSettingType] = useState(0);
 
   const [docTypeValue, setDocTypeValue] = useState(newDocType);
+  const [userValue, setUserValue] = useState(newUser);
+
+  const [docTypeModalVisiable, setDocTypeModalVisiable] = useState(false);
+  const [userModalVisiable, setUserModalVisiable] = useState(false);
+
   const docTypes = useSelector(state => state.main.settingReducer.docTypes);
   const users = useSelector(state => state.main.settingReducer.users);
 
-  const [docTypeModalVisiable, setDocTypeModalVisiable] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
   useEffect(() => {
@@ -84,12 +94,13 @@ function NewRequest() {
   }, [pageLoadingState]);
 
   useEffect(() => {
-    if (!pageLoadingState && docTypes.length > 0 && users.length > 0) {
+    if (!pageLoadingState && docTypes && users) {
       console.log(docTypes);
       console.log(users);
       setPageLoadingState(true);
     }
     setDocTypeModalVisiable(false);
+    setUserModalVisiable(false);
   }, [docTypes, users]);
 
   const handleClose = () => {
@@ -100,17 +111,83 @@ function NewRequest() {
     dispatch(Actions.updateUser({ _id: user._id, isEnabled: !user.isEnabled }));
   };
 
+  const registerUser = () => {
+    setIsEdit(false);
+    setUserValue(newUser);
+    setUserModalVisiable(true);
+  };
+
+  const handleEditUser = (row) => {
+    setIsEdit(true);
+    setUserValue(row);
+    setUserModalVisiable(true);
+  };
+
+  const handleDeleteUser = (row) => {
+    dispatch(Actions.updateUser({ _id: row._id, isDeleted: true }));
+  };
+
+  const handleResetPassword = (row) => {
+    dispatch(Actions.updateUser({ _id: row._id, password: '$2a$10$cQsheULZ.QnkVYw3MsmeN.0YEL5tlaNcIx6xLUBLoKWsduhRGZpES' }));
+    dispatch(Actions.showNotification(`Password of ${row.name} has been reset to '123456'.`));
+  };
+
+  const handleSaveUser = () => {
+    if (isEdit) {
+      dispatch(Actions.updateUser(userValue));
+    } else {
+      dispatch(Actions.addUser(userValue));
+    }
+  };
+
+  const _renderUserModal = () => (
+    <Dialog
+      open={userModalVisiable}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">{isEdit ? 'Edit User' : 'Register User'}</DialogTitle>
+      <DialogContent>
+        <Box m={2}>
+          <TextField id="name" label="Name" value={userValue.name} onChange={(event) => setUserValue({ ...userValue, name: event.target.value })} required />
+        </Box>
+        <Box m={2}>
+          <TextField id="email" label="Email" value={userValue.email} onChange={(event) => setUserValue({ ...userValue, email: event.target.value })} required />
+        </Box>
+        <Box m={2}>
+          <TextField id="phone" label="Phone" value={userValue.phone} onChange={(event) => setUserValue({ ...userValue, phone: event.target.value })} required />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => handleSaveUser()}
+          color="primary"
+          variant="contained"
+          disabled={
+            !userValue.name || userValue.name === ''
+            || !userValue.email || userValue.email === ''
+            || !userValue.phone || userValue.phone === ''
+          }
+        >
+          OK
+        </Button>
+        <Button onClick={() => setDocTypeModalVisiable(false)} color="primary" variant="outlined" autoFocus>Cancel</Button>
+      </DialogActions>
+    </Dialog>
+  );
+
   const _renderUserSettingForm = () => (
     <Box p={2} component={Paper}>
       <Grid container direction="row" justify="space-between">
         <Grid item>
           <Typography variant="h3">Customers</Typography>
         </Grid>
-        {/* <Grid item>
-          <Box mr={3}>
-            <Button color="primary" variant="contained" onClick={() => handleAddDocType()}>Add</Button>
+        <Grid item>
+          <Box m={3}>
+            <Button color="primary" variant="contained" onClick={() => registerUser()}>Register</Button>
           </Box>
-        </Grid> */}
+        </Grid>
       </Grid>
       <TableContainer>
         <Table className={classes.table} aria-label="simple table">
@@ -123,7 +200,7 @@ function NewRequest() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((row) => (
+            {users ? users.filter((u) => !u.isDeleted).map((row) => (
               <TableRow key={row.name}>
                 <TableCell component="th" scope="row"><Typography variant="h6">{row.name}</Typography></TableCell>
                 <TableCell align="center"><Typography variant="h6">{row.email}</Typography></TableCell>
@@ -135,9 +212,14 @@ function NewRequest() {
                     name="checkedA"
                     inputProps={{ 'aria-label': 'secondary checkbox' }}
                   />
+                  <Button onClick={() => handleEditUser(row)}><EditIcon /></Button>
+                  <Button onClick={() => handleDeleteUser(row)}><DeleteIcon /></Button>
+                  <Button onClick={() => handleResetPassword(row)}>
+                    <img src="../../static/images/icons/reset_password.png" alt="Reset Password" style={{ width: 24, height: 24 }} />
+                  </Button>
                 </TableCell>
               </TableRow>
-            ))}
+            )) : <></>}
           </TableBody>
         </Table>
       </TableContainer>
@@ -152,12 +234,14 @@ function NewRequest() {
 
   const handleEditDocType = (row) => {
     setIsEdit(true);
-    setDocTypeValue(row);
+    setDocTypeValue({
+      _id: row._id, name: row.name, author: row.author, isActive: row.isActive, isRequired: row.isRequired
+    });
     setDocTypeModalVisiable(true);
   };
 
   const handleDeleteDocType = (row) => {
-    dispatch(Actions.deleteDocType(row._id));
+    dispatch(Actions.updateDocType({ _id: row._id, isDeleted: true }));
   };
 
   const handleSaveDocType = () => {
@@ -182,7 +266,7 @@ function NewRequest() {
         </Box>
         <Box m={2}>
           <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Age</InputLabel>
+            <InputLabel id="demo-simple-select-label">Author</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
@@ -255,7 +339,7 @@ function NewRequest() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {docTypes.map((row) => (
+            {docTypes ? docTypes.filter((dt) => !dt.isDeleted).map((row) => (
               <TableRow key={row.name}>
                 <TableCell component="th" scope="row"><Typography variant="h6">{row.name}</Typography></TableCell>
                 <TableCell align="center"><Typography variant="h6">{row.author}</Typography></TableCell>
@@ -266,7 +350,7 @@ function NewRequest() {
                   <Button onClick={() => handleDeleteDocType(row)}><DeleteIcon /></Button>
                 </TableCell>
               </TableRow>
-            ))}
+            )) : <></>}
           </TableBody>
         </Table>
       </TableContainer>
@@ -340,6 +424,7 @@ function NewRequest() {
             </div>
           </div>
           {_renderDocTypeModal()}
+          {_renderUserModal()}
         </Paper>
       </Container>
     </div>

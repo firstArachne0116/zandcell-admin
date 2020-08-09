@@ -1,8 +1,6 @@
 import * as Actions from '../../actions/main/index';
 
 const initialState = {
-  docTypes: [],
-  users: [],
 };
 
 const settingReducer = (state = initialState, action) => {
@@ -31,6 +29,11 @@ const settingReducer = (state = initialState, action) => {
     {
       console.log('[Reducer] SET_USERS', action.payload);
       return { ...state, users: action.payload };
+    }
+    case Actions.ADD_USER:
+    {
+      console.log('[Reducer] ADD_USER', action.payload);
+      return { ...state, users: [...state.users, action.payload] };
     }
     case Actions.UPDATE_USER:
     {

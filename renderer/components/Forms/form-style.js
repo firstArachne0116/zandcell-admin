@@ -114,7 +114,6 @@ const contactStyles = makeStyles(theme => ({
     },
   },
   formControl: {
-    margin: theme.spacing(1),
     minWidth: 80,
     width: '100%',
   },

@@ -13,6 +13,14 @@ export const getAllUsers = (author) => {
   });
 };
 
+export const addUser = (user) => {
+  const apiUrl = apiConfig.baseUrl + apiModule + 'add';
+  return axios({
+    method: 'POST',
+    url: apiUrl,
+    data: user
+  });
+};
 
 export const updateUser = (user) => {
   const apiUrl = apiConfig.baseUrl + apiModule + 'update';
