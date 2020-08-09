@@ -58,6 +58,12 @@ const newUser = {
   phone: '',
 };
 
+const authors = {
+  all: 'All',
+  sell: 'Sell',
+  buy: 'Buy',
+};
+
 function NewRequest() {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -172,7 +178,7 @@ function NewRequest() {
         >
           OK
         </Button>
-        <Button onClick={() => setDocTypeModalVisiable(false)} color="primary" variant="outlined" autoFocus>Cancel</Button>
+        <Button onClick={() => setUserModalVisiable(false)} color="primary" variant="outlined" autoFocus>Cancel</Button>
       </DialogActions>
     </Dialog>
   );
@@ -342,7 +348,7 @@ function NewRequest() {
             {docTypes ? docTypes.filter((dt) => !dt.isDeleted).map((row) => (
               <TableRow key={row.name}>
                 <TableCell component="th" scope="row"><Typography variant="h6">{row.name}</Typography></TableCell>
-                <TableCell align="center"><Typography variant="h6">{row.author}</Typography></TableCell>
+                <TableCell align="center"><Typography variant="h6">{authors[row.author]}</Typography></TableCell>
                 <TableCell align="center"><Typography variant="h6">{row.isRequired ? 'Yes' : 'No'}</Typography></TableCell>
                 <TableCell align="center"><Typography variant="h6">{row.isActive ? 'Yes' : 'No'}</Typography></TableCell>
                 <TableCell align="center">
