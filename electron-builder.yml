@@ -1,0 +1,12 @@
+appId: com.zendcell.commodity
+productName: ZendCell Commodity Broker
+copyright: Copyright © 2020 ZendCell
+directories:
+  output: dist
+  buildResources: resources
+files:
+  - from: .
+    filter:
+      - package.json
+      - app
+publish: null
