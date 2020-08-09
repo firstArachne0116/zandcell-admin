@@ -30,7 +30,6 @@ import routeLink from '../../static/text/link';
 import { withTranslation } from '../../i18n';
 import { useText } from '../../theme/common';
 import Parallax from '../Parallax/Hexagonal';
-import Decoration from './Decoration';
 import useStyles from './form-style';
 import * as actionNotification from '../../store/actions/main/notification.actions';
 import * as api from '../../api';
@@ -266,7 +265,6 @@ function NewRequest() {
     </div>
   ) : (
     <div className={classes.pageWrap}>
-      <Decoration />
       <div className={clsx(classes.parallax, classes.parallaxLeft)}>
         <Parallax />
       </div>
