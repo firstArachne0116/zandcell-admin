@@ -83,6 +83,7 @@ class MyApp extends App {
       }
     });
   }
+
   render() {
     const { theme, loading } = this.state;
     const muiTheme = createMuiTheme(theme);

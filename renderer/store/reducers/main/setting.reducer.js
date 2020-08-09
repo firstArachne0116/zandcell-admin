@@ -2,9 +2,10 @@ import * as Actions from '../../actions/main/index';
 
 const initialState = {
   docTypes: [],
+  users: [],
 };
 
-const requestReducer = (state = initialState, action) => {
+const settingReducer = (state = initialState, action) => {
   switch (action.type) {
     case Actions.DOC_TYPES:
     {
@@ -26,6 +27,16 @@ const requestReducer = (state = initialState, action) => {
       console.log('[Reducer] DELETE_DOC_TYPE', action.payload);
       return { ...state, docTypes: state.docTypes.filter((dt) => (dt._id !== action.payload)) };
     }
+    case Actions.SET_USERS:
+    {
+      console.log('[Reducer] SET_USERS', action.payload);
+      return { ...state, users: action.payload };
+    }
+    case Actions.UPDATE_USER:
+    {
+      console.log('[Reducer] UPDATE_USER', action.payload);
+      return { ...state, users: state.users.map((dt) => (dt._id === action.payload._id ? action.payload : dt)) };
+    }
     default:
     {
       return state;
@@ -33,4 +44,4 @@ const requestReducer = (state = initialState, action) => {
   }
 };
 
-export default requestReducer;
+export default settingReducer;

@@ -56,7 +56,7 @@ function NewRequest() {
   const [openNotif, setNotif] = useState(false);
   // const [check, setCheck] = useState(false);
 
-  const docTypes = useSelector(state => state.main.requestReducer.docTypes);
+  const docTypes = useSelector(state => state.main.settingReducer.docTypes);
   // const userData = useSelector(state => state.main.authReducerdecodedToken);
 
   useEffect(() => {

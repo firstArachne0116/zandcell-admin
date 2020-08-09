@@ -2,20 +2,17 @@ import * as api from '../../../api';
 import * as actionApi from './api.actions';
 import * as actionNotification from './notification.actions';
 
-export const DOC_TYPES = '[REQ] DOC_TYPES';
-export const ADD_DOC_TYPE = '[REQ] ADD_DOC_TYPE';
-export const UPDATE_DOC_TYPE = '[REQ] UPDATE_DOC_TYPE';
-export const DELETE_DOC_TYPE = '[REQ] DELETE_DOC_TYPE';
+export const DOC_TYPES = '[DOC] DOC_TYPES';
+export const ADD_DOC_TYPE = '[DOC] ADD_DOC_TYPE';
+export const UPDATE_DOC_TYPE = '[DOC] UPDATE_DOC_TYPE';
+export const DELETE_DOC_TYPE = '[DOC] DELETE_DOC_TYPE';
 
-// export const UPDATE_TOKEN = '[AUTH] UPDATE TOKEN';
-// export const SET_ACCOUNT_AVATAR = '[AUTH] SET ACCOUNT AVATAR';
-// export const SET_ACCOUNT_BALANCE = '[AUTH] SET ACCOUNT BALANCE';
+export const SET_USERS = '[USER] SET USERS';
+export const UPDATE_USER = '[USER] UPDATE_USER';
 
 export const getDocTypes = (author = 'all') => (dispatch) => {
-  dispatch({ type: actionApi.SET_API_BUSY, isBusy: true });
   api.getDocTypes(author).then((result) => {
     console.log('doctypes', result);
-    dispatch({ type: actionApi.SET_API_BUSY, isBusy: false });
     if (result.data.success) {
       dispatch({ type: DOC_TYPES, payload: result.data.type });
     } else {
@@ -23,7 +20,6 @@ export const getDocTypes = (author = 'all') => (dispatch) => {
     }
   }).catch(err => {
     console.log('[get doctypes error]', err);
-    dispatch({ type: actionApi.SET_API_BUSY, isBusy: false });
     dispatch(actionNotification.showNotification('Something went wrong.'));
   });
 };
@@ -92,6 +88,38 @@ export const deleteDocType = (_id) => (dispatch) => {
     }
   }).catch(err => {
     console.log('[delete doctype error]', err);
+    dispatch({ type: actionApi.SET_API_BUSY, isBusy: false });
+    dispatch(actionNotification.showNotification('Something went wrong.'));
+  });
+};
+
+
+export const getAllUsers = () => (dispatch) => {
+  api.getAllUsers().then((result) => {
+    console.log('users', result);
+    if (result.data.success) {
+      dispatch({ type: SET_USERS, payload: result.data.users });
+    } else {
+      dispatch(actionNotification.showNotification(result.data.message));
+    }
+  }).catch(err => {
+    console.log('[get users error]', err);
+    dispatch(actionNotification.showNotification('Something went wrong.'));
+  });
+};
+
+export const updateUser = (user) => (dispatch) => {
+  dispatch({ type: actionApi.SET_API_BUSY, isBusy: true });
+  api.updateUser(user).then((result) => {
+    console.log('updated user', result);
+    dispatch({ type: actionApi.SET_API_BUSY, isBusy: false });
+    if (result.data.success) {
+      dispatch({ type: UPDATE_USER, payload: result.data.type });
+    } else {
+      dispatch(actionNotification.showNotification(result.data.message));
+    }
+  }).catch(err => {
+    console.log('[update user error]', err);
     dispatch({ type: actionApi.SET_API_BUSY, isBusy: false });
     dispatch(actionNotification.showNotification('Something went wrong.'));
   });

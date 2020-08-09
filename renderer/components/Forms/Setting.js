@@ -25,7 +25,8 @@ import {
   FormLabel,
   Select,
   InputLabel,
-  MenuItem
+  MenuItem,
+  Switch,
 } from '@material-ui/core';
 
 import { Edit as EditIcon, Delete as DeleteIcon } from '@material-ui/icons';
@@ -61,7 +62,8 @@ function NewRequest() {
   const [settingType, setSettingType] = useState(0);
 
   const [docTypeValue, setDocTypeValue] = useState(newDocType);
-  const docTypes = useSelector(state => state.main.requestReducer.docTypes);
+  const docTypes = useSelector(state => state.main.settingReducer.docTypes);
+  const users = useSelector(state => state.main.settingReducer.users);
 
   const [docTypeModalVisiable, setDocTypeModalVisiable] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -71,6 +73,7 @@ function NewRequest() {
     if (!pageLoadingState) {
       console.log('load page data');
       dispatch(Actions.getAllDocTypes());
+      dispatch(Actions.getAllUsers());
     }
   }, []);
 
@@ -81,15 +84,20 @@ function NewRequest() {
   }, [pageLoadingState]);
 
   useEffect(() => {
-    if (!pageLoadingState && docTypes.length > 0) {
+    if (!pageLoadingState && docTypes.length > 0 && users.length > 0) {
       console.log(docTypes);
+      console.log(users);
       setPageLoadingState(true);
     }
     setDocTypeModalVisiable(false);
-  }, [docTypes]);
+  }, [docTypes, users]);
 
   const handleClose = () => {
     setNotif(false);
+  };
+
+  const handleUserEnable = (user) => {
+    dispatch(Actions.updateUser({ _id: user._id, isEnabled: !user.isEnabled }));
   };
 
   const _renderUserSettingForm = () => (
@@ -109,22 +117,24 @@ function NewRequest() {
           <TableHead>
             <TableRow>
               <TableCell><Typography variant="h6">Name</Typography></TableCell>
-              <TableCell align="center"><Typography variant="h6">Author</Typography></TableCell>
-              <TableCell align="center"><Typography variant="h6">Required</Typography></TableCell>
-              <TableCell align="center"><Typography variant="h6">Active</Typography></TableCell>
+              <TableCell align="center"><Typography variant="h6">Email</Typography></TableCell>
+              <TableCell align="center"><Typography variant="h6">Phone</Typography></TableCell>
               <TableCell align="center"><Typography variant="h6">Actions</Typography></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {docTypes.map((row) => (
+            {users.map((row) => (
               <TableRow key={row.name}>
                 <TableCell component="th" scope="row"><Typography variant="h6">{row.name}</Typography></TableCell>
-                <TableCell align="center"><Typography variant="h6">{row.author}</Typography></TableCell>
-                <TableCell align="center"><Typography variant="h6">{row.isRequired ? 'Yes' : 'No'}</Typography></TableCell>
-                <TableCell align="center"><Typography variant="h6">{row.isActive ? 'Yes' : 'No'}</Typography></TableCell>
+                <TableCell align="center"><Typography variant="h6">{row.email}</Typography></TableCell>
+                <TableCell align="center"><Typography variant="h6">{row.phone}</Typography></TableCell>
                 <TableCell align="center">
-                  <Button onClick={() => {}}><EditIcon /></Button>
-                  <Button onClick={() => {}}><DeleteIcon /></Button>
+                  <Switch
+                    checked={row.isEnabled}
+                    onChange={(event) => handleUserEnable(row, event.target.value)}
+                    name="checkedA"
+                    inputProps={{ 'aria-label': 'secondary checkbox' }}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -228,7 +238,7 @@ function NewRequest() {
           <Typography variant="h3">Document Types</Typography>
         </Grid>
         <Grid item>
-          <Box mr={3}>
+          <Box m={3}>
             <Button color="primary" variant="contained" onClick={() => handleAddDocType()}>Add</Button>
           </Box>
         </Grid>
