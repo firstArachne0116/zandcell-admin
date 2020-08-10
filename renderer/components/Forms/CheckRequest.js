@@ -17,7 +17,6 @@ import Typography from '@material-ui/core/Typography';
 import Snackbar from '@material-ui/core/Snackbar';
 import ClearIcon from '@material-ui/icons/Clear';
 import CheckIcon from '@material-ui/icons/Check';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -143,31 +142,35 @@ function NewRequest() {
     setNotif(false);
   };
 
-  const generateRequestActionText = (actionType, reqId) => {
+  const getAcceptedFileCount = (reqId) => {
     const len = documents.length;
-    // let acceptedCnt = 0;
+    let acceptedCnt = 0;
+    for (let i = 0; i < len; i++) if (documents[i].requestId === reqId && documents[i].status === 'accepted') acceptedCnt++;
+    return acceptedCnt;
+  };
+
+  const getPendingFileCount = (reqId) => {
+    const len = documents.length;
     let pendingCnt = 0;
-    for (let i = 0; i < len; i++) {
-      console.log(documents[i].requestId);
-      if (documents[i].requestId === reqId) {
-        // if (documents[i].status === 'accepted') acceptedCnt++;
-        if (documents[i].status === 'pending') pendingCnt++;
-      }
-    }
-    console.log(pendingCnt);
-    if (pendingCnt !== 0) return 'There are ' + pendingCnt + ' documents still pending';
+    for (let i = 0; i < len; i++) if (documents[i].requestId === reqId && documents[i].status === 'pending') pendingCnt++;
+    return pendingCnt;
+  };
+
+  const generateRequestActionText = (actionType, reqId) => {
+    const pendingCnt = getPendingFileCount(reqId);
+    if (pendingCnt !== 0) return 'There are ' + pendingCnt + ' document(s) still pending';
     return '';
   };
 
   const handleAcceptRequest = (reqId) => {
     setRequestId(reqId);
-    setRequestActionText(generateRequestActionText('accept'));
+    setRequestActionText(generateRequestActionText('accept', reqId));
     setRequestAcceptDlgVisible('Accept');
   };
 
   const handleRejectRequest = (reqId) => {
     setRequestId(reqId);
-    setRequestActionText(generateRequestActionText('reject'));
+    setRequestActionText(generateRequestActionText('reject', reqId));
     setRequestAcceptDlgVisible('Reject');
   };
 
@@ -244,7 +247,7 @@ function NewRequest() {
               </TableHead>
               <TableBody>
                 {requests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, requestIndex) => (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={requestIndex}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={requestIndex} style={{ cursor: 'pointer' }} onClick={() => handleViewRequest(row)}>
                     {columns.map((column) => {
                       if (column.id === 'price') {
                         const { priceMin, priceMax, requestType } = row;
@@ -263,9 +266,15 @@ function NewRequest() {
                             <IconButton aria-label="Reject" color="secondary" onClick={() => handleRejectRequest(row._id)}>
                               <ClearIcon />
                             </IconButton>
-                            <IconButton aria-label="View" onClick={() => handleViewRequest(row)}>
-                              <VisibilityIcon />
-                            </IconButton>
+                          </TableCell>
+                        );
+                      }
+                      if (column.id === 'status') {
+                        const acpCnt = getAcceptedFileCount(row._id);
+                        const pndCnt = getPendingFileCount(row._id);
+                        return (
+                          <TableCell key={column.id} align="center">
+                            {row[column.id] + ' (' + (acpCnt + pndCnt) + '/' + pndCnt + ')'}
                           </TableCell>
                         );
                       }
