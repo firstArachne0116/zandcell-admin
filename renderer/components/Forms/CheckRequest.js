@@ -162,16 +162,18 @@ function NewRequest() {
     return '';
   };
 
-  const handleAcceptRequest = (reqId) => {
+  const handleAcceptRequest = (reqId, event) => {
     setRequestId(reqId);
     setRequestActionText(generateRequestActionText('accept', reqId));
     setRequestAcceptDlgVisible('Accept');
+    event.stopPropagation();
   };
 
-  const handleRejectRequest = (reqId) => {
+  const handleRejectRequest = (reqId, event) => {
     setRequestId(reqId);
     setRequestActionText(generateRequestActionText('reject', reqId));
     setRequestAcceptDlgVisible('Reject');
+    event.stopPropagation();
   };
 
   const handleViewRequest = (row) => {
@@ -260,10 +262,10 @@ function NewRequest() {
                       if (column.id === 'action') {
                         return (
                           <TableCell key={column.id} align="center" style={{ minWidth: 150 }}>
-                            <IconButton aria-label="Accept" color="primary" onClick={() => handleAcceptRequest(row._id)}>
+                            <IconButton aria-label="Accept" color="primary" onClick={(e) => handleAcceptRequest(row._id, e)}>
                               <CheckIcon />
                             </IconButton>
-                            <IconButton aria-label="Reject" color="secondary" onClick={() => handleRejectRequest(row._id)}>
+                            <IconButton aria-label="Reject" color="secondary" onClick={(e) => handleRejectRequest(row._id, e)}>
                               <ClearIcon />
                             </IconButton>
                           </TableCell>
