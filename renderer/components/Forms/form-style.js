@@ -62,7 +62,7 @@ const contactStyles = makeStyles(theme => ({
     },
     '& > div': {
       overflow: 'hidden',
-      background: theme.palette.type === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#eeeeee',
+      background: theme.palette.type === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#ffffff',
       '&:hover': {
         background: darken(theme.palette.background.paper, 0.1)
       },
@@ -404,6 +404,21 @@ const contactStyles = makeStyles(theme => ({
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
+  },
+  tabContainer: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.paper,
+    display: 'flex',
+  },
+  tabs: {
+    borderRight: `1px solid ${theme.palette.divider}`,
+  },
+  fileList: {
+    width: '100%',
+    backgroundColor: theme.palette.background.paper,
+  },
+  listBorder: {
+    width: 200
   }
 }));
 

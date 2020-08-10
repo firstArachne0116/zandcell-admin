@@ -8,11 +8,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Head from 'next/head';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 import Notification from '../components/Notification';
 import brand from '../static/text/brand';
 import { withTranslation } from '../i18n';
-import NewRequestForm from '../components/Forms/NewRequest';
+import DocumentForm from '../components/Forms/Document';
 
 const sectionMargin = margin => (margin * 20);
 const useStyles = makeStyles(theme => ({
@@ -37,7 +36,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function AddNewPage(props) {
+function SettingPage(props) {
   const router = useRouter();
   const classes = useStyles();
   // eslint-disable-next-line no-unused-vars
@@ -52,7 +51,7 @@ function AddNewPage(props) {
       <Head>
         <title>
           { brand.crypto.name }
-          &nbsp; - New Request
+          &nbsp; - Document
         </title>
       </Head>
       <CssBaseline />
@@ -63,25 +62,20 @@ function AddNewPage(props) {
           invert
         />
         <div>
-          <NewRequestForm />
+          <DocumentForm />
         </div>
-        <section className={classes.spaceTop}>
-          <Footer invert />
-        </section>
         <Notification />
       </div>
     </React.Fragment>
   );
 }
 
-AddNewPage.propTypes = {
+SettingPage.propTypes = {
   t: PropTypes.func.isRequired,
-  // projectId: PropTypes.string
 };
 
-AddNewPage.getInitialProps = async () => ({
+SettingPage.getInitialProps = async () => ({
   namespacesRequired: ['common'],
-  // projectId: props.projectId
 });
 
-export default withTranslation('common')(AddNewPage);
+export default withTranslation('common')(SettingPage);

@@ -184,9 +184,15 @@ function Contact(props) {
                       </span>
                     )}
                   />
-                  <Button variant="contained" fullWidth={isMobile} type="submit" color="secondary" size="large">
-                    {t('common:form_send')}
-                  </Button>
+                  {isMobile ? (
+                    <Button variant="contained" fullwidth type="submit" color="secondary" size="large">
+                      {t('common:form_send')}
+                    </Button>
+                  ) : (
+                    <Button variant="contained" type="submit" color="secondary" size="large">
+                      {t('common:form_send')}
+                    </Button>
+                  )}
                 </div>
               </ValidatorForm>
             </div>

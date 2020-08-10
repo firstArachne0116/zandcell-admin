@@ -72,7 +72,8 @@ function Register(props) {
       name: values.name,
       email: values.email,
       phone: values.phone,
-      password: values.password
+      password: values.password,
+      userType: 0,
     }));
   };
 
@@ -175,7 +176,7 @@ function Register(props) {
                 </span>
               )}
             />
-            <Button variant="contained" fullWidth onClick={handleSubmit} type="submit" color="secondary" size="large">
+            <Button variant="contained" w onClick={handleSubmit} type="submit" color="secondary" size="large">
               {t('common:continue')}
             </Button>
           </div>

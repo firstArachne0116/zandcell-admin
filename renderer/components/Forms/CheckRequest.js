@@ -2,6 +2,7 @@
 /* eslint-disable no-plusplus */
 import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
+import { useRouter } from 'next/router';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -33,6 +34,7 @@ import Parallax from '../Parallax/Hexagonal';
 import useStyles from './form-style';
 import * as actionNotification from '../../store/actions/main/notification.actions';
 import * as api from '../../api';
+import * as Actions from '../../store/actions/main';
 
 const columns = [
   { id: 'userName', label: 'UserName', minWidth: 150 },
@@ -84,6 +86,7 @@ const columns = [
 function NewRequest() {
   const classes = useStyles();
   const text = useText();
+  const router = useRouter();
   // const { t } = props;
   // const theme = useTheme();
 
@@ -103,7 +106,10 @@ function NewRequest() {
     api.getAllRequests().then((result) => {
       if (result.data.success) {
         if (result.data.requests == null) dispatch(actionNotification.showNotification(result.data.message));
-        else setRequests(result.data.requests);
+        else {
+          console.log(result.data.requests);
+          setRequests(result.data.requests);
+        }
         setPageLoadingState(false);
       } else {
         dispatch(actionNotification.showNotification('Something went wrong.'));
@@ -131,6 +137,11 @@ function NewRequest() {
   const handleRejectRequest = (reqId) => {
     setRequestId(reqId);
     setRequestAcceptDlgVisible('Reject');
+  };
+
+  const handleViewRequest = (row) => {
+    dispatch(Actions.setCurrentRequest(row));
+    router.push('/document');
   };
 
   const onCloseRequestAcceptDlg = () => {
@@ -194,9 +205,10 @@ function NewRequest() {
                   <TableRow hover role="checkbox" tabIndex={-1} key={requestIndex}>
                     {columns.map((column) => {
                       if (column.id === 'userName') {
+                        // console.log(row);
                         return (
                           <TableCell key={column.id} align="center">
-                            {row.userId.name}
+                            {row.userName}
                           </TableCell>
                         );
                       }
@@ -217,7 +229,7 @@ function NewRequest() {
                             <IconButton aria-label="Reject" color="secondary" onClick={() => handleRejectRequest(row._id)}>
                               <ClearIcon />
                             </IconButton>
-                            <IconButton aria-label="View">
+                            <IconButton aria-label="View" onClick={() => handleViewRequest(row)}>
                               <VisibilityIcon />
                             </IconButton>
                           </TableCell>
