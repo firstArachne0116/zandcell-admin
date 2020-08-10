@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import Icon from '@material-ui/core/Icon';
+// import clsx from 'clsx';
+// import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import * as Actions from '../../store/actions/main';
 import { withTranslation } from '../../i18n';
-import routeLink from '../../static/text/link';
+// import routeLink from '../../static/text/link';
 import { useText } from '../../theme/common';
 import Title from '../Title/TitleSecondary';
 import AuthFrame from './AuthFrame';
@@ -32,7 +32,7 @@ function Login(props) {
   const apiIsBusy = useSelector(state => state.main.apiReducer.isBusy);
 
   const onSignSuccess = () => {
-    router.push('/');
+    router.push('/dashboard');
   };
 
   useEffect(() => {
@@ -80,10 +80,10 @@ function Login(props) {
           <Title align="left">
             {t('common:login')}
           </Title>
-          <Button size="small" className={classes.buttonLink} href={routeLink.crypto.register}>
+          {/* <Button size="small" className={classes.buttonLink} href={routeLink.crypto.register}>
             <Icon className={clsx(classes.icon, classes.signArrow)}>arrow_forward</Icon>
             {t('common:login_create')}
-          </Button>
+          </Button> */}
         </div>
         <ValidatorForm
           onError={errors => console.log(errors)}
@@ -138,7 +138,7 @@ function Login(props) {
             </Button>
           </div>
           <div className={classes.btnArea}>
-            <Button variant="contained" fullwidth type="submit" onClick={handleSubmit} color="secondary" size="large">
+            <Button variant="contained" fullWidth type="submit" onClick={handleSubmit} color="secondary" size="large">
               {t('common:continue')}
             </Button>
           </div>

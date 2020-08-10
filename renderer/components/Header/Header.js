@@ -28,17 +28,6 @@ const LinkBtn = React.forwardRef(function LinkBtn(props, ref) { // eslint-disabl
   return <AnchorLink to={props.to} {...props} innerRef={ref} />; // eslint-disable-line
 });
 
-let counter = 0;
-function createData(name, url, offset) {
-  counter += 1;
-  return {
-    id: counter,
-    name,
-    url,
-    offset,
-  };
-}
-
 function Header(props) {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -62,7 +51,7 @@ function Header(props) {
     console.log(signInState);
     if (signInState === '') {
       console.log('need to login = Header.js');
-      router.push('/login');
+      router.push('/');
     } else if (storageAccessToken !== undefined && storageAccessToken !== '') {
       dispatch(Actions.signInWithToken(storageAccessToken));
     }
@@ -76,12 +65,7 @@ function Header(props) {
   } = props;
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   // const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [menuList] = useState([
-    createData(navMenu[0], '/' + navMenu[0], 100),
-    createData(navMenu[1], '/' + navMenu[1]),
-    // createData(navMenu[2], '#' + navMenu[2]),
-    // createData(navMenu[3], '#' + navMenu[3], -40),
-  ]);
+
   const logout = () => {
     localStorage.removeItem('access_token');
     dispatch(Actions.signOut());
@@ -120,24 +104,19 @@ function Header(props) {
                   items={navMenu}
                   currentClassName="active"
                 >
-                  {menuList.map(item => (
-                    <li key={item.id.toString()}>
-                      {invert ? (
-                        // eslint-disable-next-line
-                        <Button offset={item.offset || 0} href={'/' + item.url}>
-                          {item.name}
-                        </Button>
-                      ) : (
-                        // eslint-disable-next-line
-                        <Button component={AnchorLink} offset={item.offset || 0} href={item.url}>
-                          {item.name}
-                        </Button>
-                      )}
-                    </li>
-                  ))}
                   <li>
-                    <Button href={routeLink.crypto.contact}>
-                      {t('crypto-landing:header_contact')}
+                    <Button href="/user-management">
+                      User Management
+                    </Button>
+                  </li>
+                  <li>
+                    <Button href="/doctype-management">
+                      Document Type Management
+                    </Button>
+                  </li>
+                  <li>
+                    <Button href="/check-request">
+                      Request Management
                     </Button>
                   </li>
                 </Scrollspy>
