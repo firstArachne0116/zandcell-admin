@@ -18,14 +18,6 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
-  Select,
-  InputLabel,
-  MenuItem,
   Switch,
 } from '@material-ui/core';
 
@@ -36,7 +28,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-import { useTheme } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import routeLink from '../../static/text/link';
 import { withTranslation } from '../../i18n';
@@ -45,41 +36,22 @@ import useStyles from './form-style';
 
 import * as Actions from '../../store/actions/main';
 
-const newDocType = {
-  name: '',
-  author: '',
-  isRequired: false,
-  isActive: false,
-};
-
 const newUser = {
   name: '',
   email: '',
   phone: '',
 };
 
-const authors = {
-  all: 'All',
-  sell: 'Sell',
-  buy: 'Buy',
-};
-
-function NewRequest() {
+function UserManagement() {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const theme = useTheme();
   const [pageLoadingState, setPageLoadingState] = useState(false);
   const [openNotif, setNotif] = useState(false);
 
-  const [settingType, setSettingType] = useState(0);
-
-  const [docTypeValue, setDocTypeValue] = useState(newDocType);
   const [userValue, setUserValue] = useState(newUser);
 
-  const [docTypeModalVisiable, setDocTypeModalVisiable] = useState(false);
   const [userModalVisiable, setUserModalVisiable] = useState(false);
 
-  const docTypes = useSelector(state => state.main.settingReducer.docTypes);
   const users = useSelector(state => state.main.settingReducer.users);
 
   const [isEdit, setIsEdit] = useState(false);
@@ -100,14 +72,12 @@ function NewRequest() {
   }, [pageLoadingState]);
 
   useEffect(() => {
-    if (!pageLoadingState && docTypes && users) {
-      console.log(docTypes);
+    if (!pageLoadingState && users) {
       console.log(users);
       setPageLoadingState(true);
     }
-    setDocTypeModalVisiable(false);
     setUserModalVisiable(false);
-  }, [docTypes, users]);
+  }, [users]);
 
   const handleClose = () => {
     setNotif(false);
@@ -187,7 +157,7 @@ function NewRequest() {
     <Box p={2} component={Paper}>
       <Grid container direction="row" justify="space-between">
         <Grid item>
-          <Typography variant="h3">Customers</Typography>
+          <Typography variant="h3" color="primary">User Management</Typography>
         </Grid>
         <Grid item>
           <Box m={3}>
@@ -232,137 +202,6 @@ function NewRequest() {
     </Box>
   );
 
-  const handleAddDocType = () => {
-    setIsEdit(false);
-    setDocTypeValue(newDocType);
-    setDocTypeModalVisiable(true);
-  };
-
-  const handleEditDocType = (row) => {
-    setIsEdit(true);
-    setDocTypeValue({
-      _id: row._id, name: row.name, author: row.author, isActive: row.isActive, isRequired: row.isRequired
-    });
-    setDocTypeModalVisiable(true);
-  };
-
-  const handleDeleteDocType = (row) => {
-    dispatch(Actions.updateDocType({ _id: row._id, isDeleted: true }));
-  };
-
-  const handleSaveDocType = () => {
-    if (isEdit) {
-      dispatch(Actions.updateDocType(docTypeValue));
-    } else {
-      dispatch(Actions.addDocType(docTypeValue));
-    }
-  };
-
-  const _renderDocTypeModal = () => (
-    <Dialog
-      open={docTypeModalVisiable}
-      onClose={handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title">{isEdit ? 'Edit Document Type' : 'Add Document Type'}</DialogTitle>
-      <DialogContent>
-        <Box m={2}>
-          <TextField id="name" label="Name" value={docTypeValue.name} onChange={(event) => setDocTypeValue({ ...docTypeValue, name: event.target.value })} required />
-        </Box>
-        <Box m={2}>
-          <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Author</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={docTypeValue.author}
-              onChange={(event) => setDocTypeValue({ ...docTypeValue, author: event.target.value })}
-            >
-              <MenuItem value="all">All</MenuItem>
-              <MenuItem value="sell">Sell</MenuItem>
-              <MenuItem value="buy">Buy</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-        <Box m={2}>
-          <FormControl component="fieldset">
-            <FormLabel component="legend">Required</FormLabel>
-            <RadioGroup row aria-label="gender" name="required" value={docTypeValue.isRequired ? 'Yes' : 'No'} onChange={(event) => setDocTypeValue({ ...docTypeValue, isRequired: event.target.value === 'Yes' })}>
-              <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
-              <FormControlLabel value="No" control={<Radio />} label="No" />
-            </RadioGroup>
-          </FormControl>
-        </Box>
-        <Box m={2}>
-          <FormControl component="fieldset">
-            <FormLabel component="legend">Active</FormLabel>
-            <RadioGroup row aria-label="gender" name="active" value={docTypeValue.isActive ? 'Yes' : 'No'} onChange={(event) => setDocTypeValue({ ...docTypeValue, isActive: event.target.value === 'Yes' })}>
-              <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
-              <FormControlLabel value="No" control={<Radio />} label="No" />
-            </RadioGroup>
-          </FormControl>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => handleSaveDocType()}
-          color="primary"
-          variant="contained"
-          disabled={
-            !docTypeValue.name || docTypeValue.name === ''
-            || !docTypeValue.author || docTypeValue.author === ''
-          }
-        >
-          OK
-        </Button>
-        <Button onClick={() => setDocTypeModalVisiable(false)} color="primary" variant="outlined" autoFocus>Cancel</Button>
-      </DialogActions>
-    </Dialog>
-  );
-
-  const _renderDocTypeSettingForm = () => (
-    <Box p={2} component={Paper}>
-      <Grid container direction="row" justify="space-between">
-        <Grid item>
-          <Typography variant="h3">Document Types</Typography>
-        </Grid>
-        <Grid item>
-          <Box m={3}>
-            <Button color="primary" variant="contained" onClick={() => handleAddDocType()}>Add</Button>
-          </Box>
-        </Grid>
-      </Grid>
-      <TableContainer>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell><Typography variant="h6">Name</Typography></TableCell>
-              <TableCell align="center"><Typography variant="h6">Author</Typography></TableCell>
-              <TableCell align="center"><Typography variant="h6">Required</Typography></TableCell>
-              <TableCell align="center"><Typography variant="h6">Active</Typography></TableCell>
-              <TableCell align="center"><Typography variant="h6">Actions</Typography></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {docTypes ? docTypes.filter((dt) => !dt.isDeleted).map((row) => (
-              <TableRow key={row.name}>
-                <TableCell component="th" scope="row"><Typography variant="h6">{row.name}</Typography></TableCell>
-                <TableCell align="center"><Typography variant="h6">{authors[row.author]}</Typography></TableCell>
-                <TableCell align="center"><Typography variant="h6">{row.isRequired ? 'Yes' : 'No'}</Typography></TableCell>
-                <TableCell align="center"><Typography variant="h6">{row.isActive ? 'Yes' : 'No'}</Typography></TableCell>
-                <TableCell align="center">
-                  <Button onClick={() => handleEditDocType(row)}><EditIcon /></Button>
-                  <Button onClick={() => handleDeleteDocType(row)}><DeleteIcon /></Button>
-                </TableCell>
-              </TableRow>
-            )) : <></>}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
-  );
-
   const _renderForm = () => {
     if (!pageLoadingState) {
       return (
@@ -373,18 +212,7 @@ function NewRequest() {
     }
     return (
       <div>
-        {
-          settingType === 0
-          && (
-            _renderDocTypeSettingForm()
-          )
-        }
-        {
-          settingType === 1
-          && (
-            _renderUserSettingForm()
-          )
-        }
+        {_renderUserSettingForm()}
       </div>
     );
   };
@@ -416,20 +244,9 @@ function NewRequest() {
         <Paper className={clsx(classes.formBox, 'fragment-fadeUp')}>
           <div className={classes.fullFromWrap}>
             <div className={classes.form}>
-              <Grid container spacing={4} direction="row">
-                <Grid item md={12} xs={12}>
-                  <Button variant={settingType === 1 ? 'outlined' : 'contained'} style={{ marginRight: theme.spacing(2) }} size="large" color="secondary" onClick={() => setSettingType(0)}>
-                    Document Type Setting
-                  </Button>
-                  <Button variant={settingType === 0 ? 'outlined' : 'contained'} size="large" color="secondary" onClick={() => setSettingType(1)}>
-                    User Management
-                  </Button>
-                </Grid>
-              </Grid>
               { _renderForm() }
             </div>
           </div>
-          {_renderDocTypeModal()}
           {_renderUserModal()}
         </Paper>
       </Container>
@@ -437,8 +254,8 @@ function NewRequest() {
   );
 }
 
-NewRequest.propTypes = {
+UserManagement.propTypes = {
   // t: PropTypes.func.isRequired
 };
 
-export default withTranslation(['common'])(NewRequest);
+export default withTranslation(['common'])(UserManagement);

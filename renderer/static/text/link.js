@@ -1,8 +1,8 @@
 const link = {
   crypto: {
-    home: '/',
+    home: '/dashboard',
     contact: '/contact',
-    login: '/login',
+    login: '/',
     register: '/register',
     checkRequest: '/check-request',
     document: 'document',

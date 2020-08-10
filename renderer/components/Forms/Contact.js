@@ -185,7 +185,7 @@ function Contact(props) {
                     )}
                   />
                   {isMobile ? (
-                    <Button variant="contained" fullwidth type="submit" color="secondary" size="large">
+                    <Button variant="contained" fullWidth type="submit" color="secondary" size="large">
                       {t('common:form_send')}
                     </Button>
                   ) : (

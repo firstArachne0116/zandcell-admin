@@ -11,7 +11,7 @@ import Header from '../components/Header';
 import Notification from '../components/Notification';
 import brand from '../static/text/brand';
 import { withTranslation } from '../i18n';
-import SettingForm from '../components/Forms/Setting';
+import UserManagementForm from '../components/Forms/UserManagement';
 
 const sectionMargin = margin => (margin * 20);
 const useStyles = makeStyles(theme => ({
@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function SettingPage(props) {
+function UserManagementPage(props) {
   const router = useRouter();
   const classes = useStyles();
   // eslint-disable-next-line no-unused-vars
@@ -51,7 +51,7 @@ function SettingPage(props) {
       <Head>
         <title>
           { brand.crypto.name }
-          &nbsp; - Setting
+          &nbsp; - User Management
         </title>
       </Head>
       <CssBaseline />
@@ -62,7 +62,7 @@ function SettingPage(props) {
           invert
         />
         <div>
-          <SettingForm />
+          <UserManagementForm />
         </div>
         <Notification />
       </div>
@@ -70,12 +70,12 @@ function SettingPage(props) {
   );
 }
 
-SettingPage.propTypes = {
+UserManagementPage.propTypes = {
   t: PropTypes.func.isRequired,
 };
 
-SettingPage.getInitialProps = async () => ({
+UserManagementPage.getInitialProps = async () => ({
   namespacesRequired: ['common'],
 });
 
-export default withTranslation('common')(SettingPage);
+export default withTranslation('common')(UserManagementPage);

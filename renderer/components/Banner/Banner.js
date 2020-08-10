@@ -47,7 +47,7 @@ function Banner(props) {
 
   const handleSetting = () => {
     if (signInState === '') {
-      router.push('/login');
+      router.push('/dashboard');
     } else {
       router.push({
         pathname: '/setting',
@@ -57,7 +57,7 @@ function Banner(props) {
 
   const handleCheckRequests = () => {
     if (signInState === '') {
-      router.push('/login');
+      router.push('/');
     } else {
       router.push({
         pathname: '/check-request',
