@@ -17,7 +17,6 @@ import Typography from '@material-ui/core/Typography';
 import Snackbar from '@material-ui/core/Snackbar';
 import ClearIcon from '@material-ui/icons/Clear';
 import CheckIcon from '@material-ui/icons/Check';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -111,6 +110,9 @@ function NewRequest() {
   const [reqType, setReqType] = useState('Buyer');
   const [reqStatus, setReqStatus] = useState('all');
 
+  // const [requestUserInfo, setRequestUserInfo] = useState([]);
+  const [userInfoDlgVisible, setUserInfoDlgVisible] = useState(false);
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -143,32 +145,53 @@ function NewRequest() {
     setNotif(false);
   };
 
-  const generateRequestActionText = (actionType, reqId) => {
+  const getAcceptedFileCount = (reqId) => {
     const len = documents.length;
-    // let acceptedCnt = 0;
+    let acceptedCnt = 0;
+    for (let i = 0; i < len; i++) if (documents[i].requestId === reqId && documents[i].status === 'accepted') acceptedCnt++;
+    return acceptedCnt;
+  };
+
+  const getPendingFileCount = (reqId) => {
+    const len = documents.length;
     let pendingCnt = 0;
-    for (let i = 0; i < len; i++) {
-      console.log(documents[i].requestId);
-      if (documents[i].requestId === reqId) {
-        // if (documents[i].status === 'accepted') acceptedCnt++;
-        if (documents[i].status === 'pending') pendingCnt++;
-      }
-    }
-    console.log(pendingCnt);
-    if (pendingCnt !== 0) return 'There are ' + pendingCnt + ' documents still pending';
+    for (let i = 0; i < len; i++) if (documents[i].requestId === reqId && documents[i].status === 'pending') pendingCnt++;
+    return pendingCnt;
+  };
+
+  const generateRequestActionText = (actionType, reqId) => {
+    const pendingCnt = getPendingFileCount(reqId);
+    if (pendingCnt !== 0) return 'There are ' + pendingCnt + ' document(s) still pending';
     return '';
   };
 
-  const handleAcceptRequest = (reqId) => {
+  // const handleCloseUserInfoDlg =
+
+  const handleAcceptRequest = (reqId, event) => {
     setRequestId(reqId);
-    setRequestActionText(generateRequestActionText('accept'));
+    setRequestActionText(generateRequestActionText('accept', reqId));
     setRequestAcceptDlgVisible('Accept');
+    event.stopPropagation();
   };
 
-  const handleRejectRequest = (reqId) => {
+  const handleRejectRequest = (reqId, event) => {
     setRequestId(reqId);
-    setRequestActionText(generateRequestActionText('reject'));
+    setRequestActionText(generateRequestActionText('reject', reqId));
     setRequestAcceptDlgVisible('Reject');
+    event.stopPropagation();
+  };
+
+  const handleUserInfoView = (userName, event) => {
+    api.getUserInfo(userName).then((result) => {
+      if (result.data.success) {
+        // setRequestUserInfo(result.data.users);
+        setUserInfoDlgVisible(true);
+      } else {
+        dispatch(actionNotification.showNotification('Something went wrong.'));
+        setRequestAcceptDlgVisible('');
+      }
+    });
+    event.stopPropagation();
   };
 
   const handleViewRequest = (row) => {
@@ -244,7 +267,7 @@ function NewRequest() {
               </TableHead>
               <TableBody>
                 {requests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, requestIndex) => (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={requestIndex}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={requestIndex} style={{ cursor: 'pointer' }} onClick={() => handleViewRequest(row)}>
                     {columns.map((column) => {
                       if (column.id === 'price') {
                         const { priceMin, priceMax, requestType } = row;
@@ -257,15 +280,21 @@ function NewRequest() {
                       if (column.id === 'action') {
                         return (
                           <TableCell key={column.id} align="center" style={{ minWidth: 150 }}>
-                            <IconButton aria-label="Accept" color="primary" onClick={() => handleAcceptRequest(row._id)}>
+                            <IconButton aria-label="Accept" color="primary" onClick={(e) => handleAcceptRequest(row._id, e)}>
                               <CheckIcon />
                             </IconButton>
-                            <IconButton aria-label="Reject" color="secondary" onClick={() => handleRejectRequest(row._id)}>
+                            <IconButton aria-label="Reject" color="secondary" onClick={(e) => handleRejectRequest(row._id, e)}>
                               <ClearIcon />
                             </IconButton>
-                            <IconButton aria-label="View" onClick={() => handleViewRequest(row)}>
-                              <VisibilityIcon />
-                            </IconButton>
+                          </TableCell>
+                        );
+                      }
+                      if (column.id === 'status') {
+                        const acpCnt = getAcceptedFileCount(row._id);
+                        const pndCnt = getPendingFileCount(row._id);
+                        return (
+                          <TableCell key={column.id} align="center">
+                            {row[column.id] + ' (' + (acpCnt + pndCnt) + '/' + pndCnt + ')'}
                           </TableCell>
                         );
                       }
@@ -274,6 +303,14 @@ function NewRequest() {
                         return (
                           <TableCell key={column.id} align="center">
                             {value.getFullYear() + '-' + (value.getMonth() + 1) + '-' + value.getDate() + ' ' + (value.getHours() + 1) + ':' + value.getMinutes() + ':' + value.getSeconds()}
+                          </TableCell>
+                        );
+                      }
+                      if (column.id === 'userName') {
+                        const value = new Date(row[column.id]);
+                        return (
+                          <TableCell key={column.id} align="center">
+                            <Button onClick={(e) => handleUserInfoView(value, e)}> value </Button>
                           </TableCell>
                         );
                       }
@@ -374,6 +411,38 @@ function NewRequest() {
         <Dialog
           open={requestAcceptDlgVisible !== ''}
           onClose={onCloseRequestAcceptDlg}
+        >
+          <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+            Confirm to
+            {' '}
+            {requestAcceptDlgVisible}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you really to
+              {' '}
+              {requestAcceptDlgVisible}
+              ?
+              {requestActionText !== '' ? (
+                <>
+                  <br />
+                  {requestActionText}
+                </>
+              ) : (<></>)}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={onCloseRequestAcceptDlg} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={requestAcceptDlgVisible === 'Accept' ? onAcceptRequest : onRejectRequest} color="primary">
+              {requestAcceptDlgVisible}
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={userInfoDlgVisible}
+          // onClose={handleCloseUserInfoDlg}
         >
           <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
             Confirm to
