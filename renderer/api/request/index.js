@@ -2,12 +2,13 @@ import axios from 'axios';
 import apiConfig from '../config';
 
 const apiModule = 'request/';
-export const getAllRequests = () => {
+export const getAllRequests = (requestType, requestStatus) => {
   console.log('[api] get all requests');
   const apiUrl = apiConfig.baseUrl + apiModule + 'get-all';
   return axios({
     method: 'POST',
-    url: apiUrl
+    url: apiUrl,
+    data: { requestType, requestStatus }
   });
 };
 

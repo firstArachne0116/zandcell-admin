@@ -8,7 +8,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Head from 'next/head';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 import Notification from '../components/Notification';
 import brand from '../static/text/brand';
 import { withTranslation } from '../i18n';

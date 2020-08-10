@@ -117,6 +117,13 @@ const contactStyles = makeStyles(theme => ({
     minWidth: 80,
     width: '100%',
   },
+  requestStatusSelect: {
+    minWidth: 80,
+    maxWidth: 150,
+    padding: 4,
+    marginLeft: 20,
+    marginRight: 20
+  },
   flex: {},
   btnArea: {
     marginTop: theme.spacing(5),

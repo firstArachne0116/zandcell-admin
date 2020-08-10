@@ -23,8 +23,16 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import { useDispatch } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
+import { useDispatch } from 'react-redux';
 
 import routeLink from '../../static/text/link';
 import { withTranslation } from '../../i18n';
@@ -59,13 +67,13 @@ const columns = [
   {
     id: 'createdAt',
     label: 'Created At',
-    minWidth: 70,
+    minWidth: 120,
     format: (value) => value.toLocaleString('en-US'),
   },
   {
     id: 'updatedAt',
     label: 'Updated At',
-    minWidth: 70,
+    minWidth: 120,
     format: (value) => value.toLocaleString('en-US'),
   },
   {
@@ -90,20 +98,29 @@ function NewRequest() {
   const dispatch = useDispatch();
 
   const [requestAcceptDlgVisible, setRequestAcceptDlgVisible] = useState(''); // '' => false, 'Accept' => AcceptDlg, 'Reject' => RejectDlg
-  const [requestId, setRequestId] = useState(-1); // '' => false, 'Accept' => AcceptDlg, 'Reject' => RejectDlg
+  const [requestId, setRequestId] = useState(-1);
   const [requests, setRequests] = useState([]);
-
+  const [documents, setDocuments] = useState([]);
+  const [requestActionText, setRequestActionText] = useState('');
   const [pageLoadingState, setPageLoadingState] = useState(false);
   const [openNotif, setNotif] = useState(false);
+
+  const [reqType, setReqType] = useState('Buyer');
+  const [reqStatus, setReqStatus] = useState('all');
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const getAllRequests = () => {
-    api.getAllRequests().then((result) => {
+  const getAllRequests = (requestType, requestStatus) => {
+    api.getAllRequests(requestType, requestStatus).then((result) => {
       if (result.data.success) {
-        if (result.data.requests == null) dispatch(actionNotification.showNotification(result.data.message));
-        else setRequests(result.data.requests);
+        if (result.data.requests == null) {
+          dispatch(actionNotification.showNotification(result.data.message));
+          setRequests([]);
+        } else {
+          setRequests(result.data.requests);
+          setDocuments(result.data.documents);
+        }
         setPageLoadingState(false);
       } else {
         dispatch(actionNotification.showNotification('Something went wrong.'));
@@ -115,7 +132,7 @@ function NewRequest() {
     if (pageLoadingState) {
       console.log('page data loaded');
     }
-    getAllRequests();
+    getAllRequests(reqType, reqStatus);
     console.log('getting all requests');
   }, [pageLoadingState]);
 
@@ -123,13 +140,31 @@ function NewRequest() {
     setNotif(false);
   };
 
+  const generateRequestActionText = (actionType, reqId) => {
+    const len = documents.length;
+    // let acceptedCnt = 0;
+    let pendingCnt = 0;
+    for (let i = 0; i < len; i++) {
+      console.log(documents[i].requestId);
+      if (documents[i].requestId === reqId) {
+        // if (documents[i].status === 'accepted') acceptedCnt++;
+        if (documents[i].status === 'pending') pendingCnt++;
+      }
+    }
+    console.log(pendingCnt);
+    if (pendingCnt !== 0) return 'There are ' + pendingCnt + ' documents still pending';
+    return '';
+  };
+
   const handleAcceptRequest = (reqId) => {
     setRequestId(reqId);
+    setRequestActionText(generateRequestActionText('accept'));
     setRequestAcceptDlgVisible('Accept');
   };
 
   const handleRejectRequest = (reqId) => {
     setRequestId(reqId);
+    setRequestActionText(generateRequestActionText('reject'));
     setRequestAcceptDlgVisible('Reject');
   };
 
@@ -140,7 +175,7 @@ function NewRequest() {
   const onRejectRequest = () => {
     api.rejectRequest(requestId).then((result) => {
       if (result.data.success) {
-        getAllRequests();
+        getAllRequests(reqType, reqStatus);
         setRequestAcceptDlgVisible('');
       } else {
         dispatch(actionNotification.showNotification('Something went wrong.'));
@@ -152,7 +187,7 @@ function NewRequest() {
   const onAcceptRequest = () => {
     api.acceptRequest(requestId).then((result) => {
       if (result.data.success) {
-        getAllRequests();
+        getAllRequests(reqType, reqStatus);
         setRequestAcceptDlgVisible('');
       } else {
         dispatch(actionNotification.showNotification('Something went wrong.'));
@@ -166,8 +201,18 @@ function NewRequest() {
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
+    setRowsPerPage(event.target.value);
     setPage(0);
+  };
+
+  const handleRequestTypeChange = (event) => {
+    setReqType(event.target.value);
+    getAllRequests(event.target.value, reqStatus);
+  };
+
+  const handleRequestStatusChange = (event) => {
+    setReqStatus(event.target.value);
+    getAllRequests(reqType, event.target.value);
   };
 
   const _renderRequests = () => {
@@ -193,13 +238,6 @@ function NewRequest() {
                 {requests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, requestIndex) => (
                   <TableRow hover role="checkbox" tabIndex={-1} key={requestIndex}>
                     {columns.map((column) => {
-                      if (column.id === 'userName') {
-                        return (
-                          <TableCell key={column.id} align="center">
-                            {row.userId.name}
-                          </TableCell>
-                        );
-                      }
                       if (column.id === 'price') {
                         const { priceMin, priceMax, requestType } = row;
                         return (
@@ -297,6 +335,29 @@ function NewRequest() {
             >
               Check Requests
             </Typography>
+            <Grid container alignItems="center" style={{ paddingLeft: 30 }}>
+              <FormControl component="fieldset">
+                <RadioGroup row aria-label="gender" name="requestType" value={reqType} onChange={handleRequestTypeChange}>
+                  <FormControlLabel value="Buyer" control={<Radio />} label="Buyer" />
+                  <FormControlLabel value="Seller" control={<Radio />} label="Seller" />
+                </RadioGroup>
+              </FormControl>
+              <Divider orientation="vertical" flexItem />
+              <FormControl className={classes.requestStatusSelect}>
+                <Select
+                  value={reqStatus}
+                  onChange={handleRequestStatusChange}
+                  displayEmpty
+                  className={classes.selectEmpty}
+                  inputProps={{ 'aria-label': 'Without label' }}
+                >
+                  <MenuItem value="all">All</MenuItem>
+                  <MenuItem value="pending">Pending</MenuItem>
+                  <MenuItem value="accepted">Accepted</MenuItem>
+                  <MenuItem value="rejected">Rejected</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
             <div>
               { _renderRequests() }
             </div>
@@ -317,6 +378,12 @@ function NewRequest() {
               {' '}
               {requestAcceptDlgVisible}
               ?
+              {requestActionText !== '' ? (
+                <>
+                  <br />
+                  {requestActionText}
+                </>
+              ) : (<></>)}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
