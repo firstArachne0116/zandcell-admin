@@ -110,6 +110,9 @@ function NewRequest() {
   const [reqType, setReqType] = useState('Buyer');
   const [reqStatus, setReqStatus] = useState('all');
 
+  // const [requestUserInfo, setRequestUserInfo] = useState([]);
+  const [userInfoDlgVisible, setUserInfoDlgVisible] = useState(false);
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -162,6 +165,8 @@ function NewRequest() {
     return '';
   };
 
+  // const handleCloseUserInfoDlg =
+
   const handleAcceptRequest = (reqId, event) => {
     setRequestId(reqId);
     setRequestActionText(generateRequestActionText('accept', reqId));
@@ -173,6 +178,19 @@ function NewRequest() {
     setRequestId(reqId);
     setRequestActionText(generateRequestActionText('reject', reqId));
     setRequestAcceptDlgVisible('Reject');
+    event.stopPropagation();
+  };
+
+  const handleUserInfoView = (userName, event) => {
+    api.getUserInfo(userName).then((result) => {
+      if (result.data.success) {
+        // setRequestUserInfo(result.data.users);
+        setUserInfoDlgVisible(true);
+      } else {
+        dispatch(actionNotification.showNotification('Something went wrong.'));
+        setRequestAcceptDlgVisible('');
+      }
+    });
     event.stopPropagation();
   };
 
@@ -288,6 +306,14 @@ function NewRequest() {
                           </TableCell>
                         );
                       }
+                      if (column.id === 'userName') {
+                        const value = new Date(row[column.id]);
+                        return (
+                          <TableCell key={column.id} align="center">
+                            <Button onClick={(e) => handleUserInfoView(value, e)}> value </Button>
+                          </TableCell>
+                        );
+                      }
 
                       const value = row[column.id];
                       return (
@@ -385,6 +411,38 @@ function NewRequest() {
         <Dialog
           open={requestAcceptDlgVisible !== ''}
           onClose={onCloseRequestAcceptDlg}
+        >
+          <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+            Confirm to
+            {' '}
+            {requestAcceptDlgVisible}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you really to
+              {' '}
+              {requestAcceptDlgVisible}
+              ?
+              {requestActionText !== '' ? (
+                <>
+                  <br />
+                  {requestActionText}
+                </>
+              ) : (<></>)}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={onCloseRequestAcceptDlg} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={requestAcceptDlgVisible === 'Accept' ? onAcceptRequest : onRejectRequest} color="primary">
+              {requestAcceptDlgVisible}
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={userInfoDlgVisible}
+          // onClose={handleCloseUserInfoDlg}
         >
           <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
             Confirm to
