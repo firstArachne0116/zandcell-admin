@@ -138,7 +138,7 @@ function Login(props) {
             </Button>
           </div>
           <div className={classes.btnArea}>
-            <Button variant="contained" fullWidth type="submit" onClick={handleSubmit} color="secondary" size="large">
+            <Button variant="contained" fullwidth type="submit" onClick={handleSubmit} color="secondary" size="large">
               {t('common:continue')}
             </Button>
           </div>
