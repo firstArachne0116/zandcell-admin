@@ -2,9 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 // import { useRouter } from 'next/router';
 // import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import Container from '@material-ui/core/Container';
+import {
+  Container,
+  Snackbar
+} from '@material-ui/core';
 // import Grid from '@material-ui/core/Grid';
-// import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 // import useMediaQuery from '@material-ui/core/useMediaQuery';
 // import { useTheme } from '@material-ui/core/styles';
 // import Button from '@material-ui/core/Button';
@@ -12,8 +15,7 @@ import Container from '@material-ui/core/Container';
 import { withTranslation } from '../../i18n';
 import useStyles from './banner-style';
 
-// import * as api from '../../api';
-// import * as Actions from '../../store/actions/main';
+import * as Actions from '../../store/actions/main';
 function Banner() {
   // const router = useRouter();
   const classes = useStyles();
@@ -31,36 +33,64 @@ function Banner() {
 
   const [hide, setHide] = useState(false);
 
-  // const getAllRequests = (requestType, requestStatus) => {
-  //   api.getAllRequests(requestType, requestStatus).then((result) => {
-  //     if (result.data.success) {
-  //       if (result.data.requests == null) {
-  //         dispatch(Actions.showNotification(result.data.message));
-  //         setRequests([]);
-  //       } else {
-  //         setRequests(result.data.requests);
-  //         // setDocuments(result.data.documents);
-  //       }
-  //       setPageLoadingState(false);
-  //     } else {
-  //       dispatch(Actions.showNotification('Something went wrong.'));
-  //     }
-  //   });
+  const dispatch = useDispatch();
+
+  const requests = useSelector(state => state.main.requestReducer.requests);
+  const allDocuments = useSelector(state => state.main.requestReducer.allDocuments);
+
+  const [pageLoadingState, setPageLoadingState] = useState(false);
+  const [openNotif, setNotif] = useState(false);
+
+  useEffect(() => {
+    console.log(pageLoadingState);
+    if (!pageLoadingState) {
+      console.log('load page data');
+      dispatch(Actions.getAllRequests('all', 'pending'));
+      dispatch(Actions.getAllDocuments());
+    }
+  }, []);
+
+  useEffect(() => {
+    if (pageLoadingState) {
+      console.log('page data loaded');
+    }
+  }, [pageLoadingState]);
+
+  useEffect(() => {
+    if (!pageLoadingState && requests && allDocuments) {
+      console.log(requests);
+      setPageLoadingState(true);
+    }
+  }, [requests, allDocuments]);
+
+  const handleClose = () => {
+    setNotif(false);
+  };
+
+  // const getAcceptedFileCount = (reqId) => {
+  //   const len = documents.length;
+  //   let acceptedCnt = 0;
+  //   for (let i = 0; i < len; i++) if (documents[i].requestId === reqId && documents[i].status === 'accepted') acceptedCnt++;
+  //   return acceptedCnt;
   // };
 
-  // useEffect(() => {
-  //   if (pageLoadingState) {
-  //     console.log('page data loaded');
-  //   }
-  //   getAllRequests(reqType, reqStatus);
-  //   console.log('getting all requests');
-  // }, [pageLoadingState]);
-
-  // const handleClose = () => {
-  //   setNotif(false);
+  // const getPendingFileCount = (reqId) => {
+  //   const len = documents.length;
+  //   let pendingCnt = 0;
+  //   for (let i = 0; i < len; i++) if (documents[i].requestId === reqId && documents[i].status === 'pending') pendingCnt++;
+  //   return pendingCnt;
   // };
 
-  // const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
+  const _renderRequests = () => {
+    if (requests.length) {
+      return (
+        <Container className={classes.tableRoot}>
+          {/*  */}
+        </Container>
+      );
+    }
+    return (<></>);
+  };
 
   const handleScroll = () => {
     if (!elem.current) {
@@ -89,8 +119,19 @@ function Banner() {
           </div>
         </div>
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        key="top right"
+        open={openNotif}
+        autoHideDuration={4000}
+        onClose={handleClose}
+        ContentProps={{
+          'aria-describedby': 'message-id',
+        }}
+        message={<span id="message-id">Message Sent</span>}
+      />
       <Container fixed>
-        {/*  */}
+        {_renderRequests()}
       </Container>
     </div>
   );

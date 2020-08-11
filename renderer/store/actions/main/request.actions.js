@@ -6,6 +6,7 @@ export const SET_RUQUEST_CONTENT = '[REQ] SET_RUQUEST_CONTENT';
 export const ADD_COMMENT = '[REQ] ADD_COMMENT';
 export const ACCEPT_DOC = '[REQ] ACCEPT_DOC';
 export const REJECT_DOC = '[REQ] REJECT_DOC';
+export const SET_REQUESTS = '[REQ] SET_REQUESTS';
 
 export const setCurrentRequest = (req) => ({
   type: SET_CURRENT_REQUEST,
@@ -78,6 +79,46 @@ export const addComment = (comment) => (dispatch) => {
     });
   } catch (err) {
     console.log('[add comment error]', err);
+    dispatch(actionNotification.showNotification('Something went wrong.'));
+  }
+};
+
+export const getAllRequests = (requestType, requestStatus) => (dispatch) => {
+  try {
+    api.getAllRequests(requestType, requestStatus).then((result) => {
+      if (result.data.success) {
+        if (result.data.requests == null) {
+          dispatch(actionNotification.showNotification(result.data.message));
+          dispatch({ type: SET_REQUESTS, payload: [] });
+        } else {
+          dispatch({ type: SET_REQUESTS, payload: result.data.requests });
+        }
+      } else {
+        dispatch(actionNotification.showNotification('Something went wrong.'));
+      }
+    });
+  } catch (err) {
+    console.log('[get request error]', err);
+    dispatch(actionNotification.showNotification('Something went wrong.'));
+  }
+};
+
+export const getAllDocuments = () => (dispatch) => {
+  try {
+    api.getAllRequests().then((result) => {
+      if (result.data.success) {
+        if (result.data.requests == null) {
+          dispatch(actionNotification.showNotification(result.data.message));
+          dispatch({ type: SET_REQUESTS, payload: [] });
+        } else {
+          dispatch({ type: SET_REQUESTS, payload: result.data.requests });
+        }
+      } else {
+        dispatch(actionNotification.showNotification('Something went wrong.'));
+      }
+    });
+  } catch (err) {
+    console.log('[get request error]', err);
     dispatch(actionNotification.showNotification('Something went wrong.'));
   }
 };

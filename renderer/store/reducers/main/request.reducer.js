@@ -38,6 +38,13 @@ const requestReducer = (state = initialState, action) => {
         ...state, documents: state.documents.map((doc) => (doc._id === action.payload.documetId ? { ...doc, status: 'Rejected' } : doc)), comments: [...state.comments, action.payload.rejectComment]
       };
     }
+    case Actions.SET_REQUESTS:
+    {
+      console.log('[Reducer] ACCEPT_DOC', action.payload);
+      return {
+        ...state, requests: action.payload
+      };
+    }
     default:
     {
       return state;
