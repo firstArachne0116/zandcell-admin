@@ -30,3 +30,12 @@ export const updateUser = (user) => {
     data: user
   });
 };
+
+export const getUserInfo = (user) => {
+  const apiUrl = apiConfig.baseUrl + apiModule + 'get-user-by-id';
+  return axios({
+    method: 'POST',
+    url: apiUrl,
+    data: { userName: user }
+  });
+};

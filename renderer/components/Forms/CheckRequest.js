@@ -110,7 +110,7 @@ function NewRequest() {
   const [reqType, setReqType] = useState('Buyer');
   const [reqStatus, setReqStatus] = useState('all');
 
-  // const [requestUserInfo, setRequestUserInfo] = useState([]);
+  const [requestUserInfo, setRequestUserInfo] = useState([]);
   const [userInfoDlgVisible, setUserInfoDlgVisible] = useState(false);
 
   const [page, setPage] = React.useState(0);
@@ -165,7 +165,9 @@ function NewRequest() {
     return '';
   };
 
-  // const handleCloseUserInfoDlg =
+  const handleCloseUserInfoDlg = () => {
+    setUserInfoDlgVisible(false);
+  };
 
   const handleAcceptRequest = (reqId, event) => {
     setRequestId(reqId);
@@ -184,11 +186,11 @@ function NewRequest() {
   const handleUserInfoView = (userName, event) => {
     api.getUserInfo(userName).then((result) => {
       if (result.data.success) {
-        // setRequestUserInfo(result.data.users);
+        setRequestUserInfo(result.data.user);
         setUserInfoDlgVisible(true);
       } else {
         dispatch(actionNotification.showNotification('Something went wrong.'));
-        setRequestAcceptDlgVisible('');
+        setUserInfoDlgVisible(false);
       }
     });
     event.stopPropagation();
@@ -307,10 +309,12 @@ function NewRequest() {
                         );
                       }
                       if (column.id === 'userName') {
-                        const value = new Date(row[column.id]);
+                        const value = row[column.id];
                         return (
                           <TableCell key={column.id} align="center">
-                            <Button onClick={(e) => handleUserInfoView(value, e)}> value </Button>
+                            <Button onClick={(e) => handleUserInfoView(value, e)}>
+                              {value}
+                            </Button>
                           </TableCell>
                         );
                       }
@@ -442,33 +446,42 @@ function NewRequest() {
         </Dialog>
         <Dialog
           open={userInfoDlgVisible}
-          // onClose={handleCloseUserInfoDlg}
+          onClose={handleCloseUserInfoDlg}
         >
           <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-            Confirm to
-            {' '}
-            {requestAcceptDlgVisible}
+            User Info
           </DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Are you really to
-              {' '}
-              {requestAcceptDlgVisible}
-              ?
-              {requestActionText !== '' ? (
-                <>
-                  <br />
-                  {requestActionText}
-                </>
-              ) : (<></>)}
-            </DialogContentText>
+            <TableContainer component={Paper}>
+              <Table className={classes.table} aria-label="simple table">
+                <TableBody>
+                  <TableRow>
+                    <TableCell aligh="right" scope="row"> Name </TableCell>
+                    <TableCell align="left">{requestUserInfo.name}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell aligh="right" scope="row"> Email </TableCell>
+                    <TableCell align="left">{requestUserInfo.email}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell aligh="right" scope="row"> Phone </TableCell>
+                    <TableCell align="left">{requestUserInfo.phone}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell aligh="right" scope="row"> Description </TableCell>
+                    <TableCell align="left">{requestUserInfo.description}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell aligh="right" scope="row"> UserName </TableCell>
+                    <TableCell align="left">{requestUserInfo.username}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={onCloseRequestAcceptDlg} color="secondary">
-              Cancel
-            </Button>
-            <Button onClick={requestAcceptDlgVisible === 'Accept' ? onAcceptRequest : onRejectRequest} color="primary">
-              {requestAcceptDlgVisible}
+            <Button autoFocus onClick={handleCloseUserInfoDlg} color="primary">
+              Ok
             </Button>
           </DialogActions>
         </Dialog>
