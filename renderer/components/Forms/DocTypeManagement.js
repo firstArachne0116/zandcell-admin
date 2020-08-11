@@ -191,10 +191,10 @@ function DocTypeManagement() {
     <Box p={2} component={Paper}>
       <Grid container direction="row" justify="space-between">
         <Grid item>
-          <Typography variant="h3" color="primary">Document Type Management</Typography>
+          {/*  */}
         </Grid>
         <Grid item>
-          <Box m={3}>
+          <Box m={3} mr={10}>
             <Button color="primary" variant="contained" onClick={() => handleAddDocType()}>Add</Button>
           </Box>
         </Grid>
@@ -272,6 +272,9 @@ function DocTypeManagement() {
         </IconButton>
         <Paper className={clsx(classes.formBox, 'fragment-fadeUp')}>
           <div className={classes.fullFromWrap}>
+            <center>
+              <Typography variant="h3" color="primary">Document Type Management</Typography>
+            </center>
             <div className={classes.form}>
               { _renderForm() }
             </div>

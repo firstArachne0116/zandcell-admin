@@ -19,6 +19,10 @@ import {
   TableRow,
   TextField,
   Switch,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel
 } from '@material-ui/core';
 
 import { Edit as EditIcon, Delete as DeleteIcon } from '@material-ui/icons';
@@ -40,7 +44,10 @@ const newUser = {
   name: '',
   email: '',
   phone: '',
+  userType: 0,
 };
+
+const userTypes = ['Admin', 'Staff', 'Customer'];
 
 function UserManagement() {
   const classes = useStyles();
@@ -55,12 +62,12 @@ function UserManagement() {
   const users = useSelector(state => state.main.settingReducer.users);
 
   const [isEdit, setIsEdit] = useState(false);
+  const [userTypeFilter, setUserTypeFilter] = useState(-1);
 
   useEffect(() => {
     console.log(pageLoadingState);
     if (!pageLoadingState) {
       console.log('load page data');
-      dispatch(Actions.getAllDocTypes());
       dispatch(Actions.getAllUsers());
     }
   }, []);
@@ -134,6 +141,22 @@ function UserManagement() {
         <Box m={2}>
           <TextField id="phone" label="Phone" value={userValue.phone} onChange={(event) => setUserValue({ ...userValue, phone: event.target.value })} required />
         </Box>
+        <Box m={2}>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-error-label">User Type</InputLabel>
+            <Select
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
+              value={userValue.userType}
+              onChange={(e) => setUserValue({ ...userValue, userType: e.target.value })}
+              label="UserType"
+            >
+              <MenuItem value={0}>Admin</MenuItem>
+              <MenuItem value={1}>Staff</MenuItem>
+              <MenuItem value={2}>Customer</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button
@@ -157,7 +180,31 @@ function UserManagement() {
     <Box p={2} component={Paper}>
       <Grid container direction="row" justify="space-between">
         <Grid item>
-          <Typography variant="h3" color="primary">User Management</Typography>
+          <Box m={3}>
+            <Grid container direction="row" spacing={2}>
+              <Grid item>
+                <Box mt={0.5}>
+                  <Typography> User Type  : </Typography>
+                </Box>
+              </Grid>
+              <Grid item>
+                <FormControl className={classes.formControl}>
+                  <Select
+                    labelId="demo-simple-select-outlined-label"
+                    id="demo-simple-select-outlined"
+                    value={userTypeFilter}
+                    onChange={(e) => setUserTypeFilter(e.target.value)}
+                    label="UserType"
+                  >
+                    <MenuItem value={-1}>All</MenuItem>
+                    <MenuItem value={0}>Admin</MenuItem>
+                    <MenuItem value={1}>Staff</MenuItem>
+                    <MenuItem value={2}>Customer</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Box>
         </Grid>
         <Grid item>
           <Box m={3}>
@@ -169,18 +216,22 @@ function UserManagement() {
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell><Typography variant="h6">Name</Typography></TableCell>
-              <TableCell align="center"><Typography variant="h6">Email</Typography></TableCell>
-              <TableCell align="center"><Typography variant="h6">Phone</Typography></TableCell>
-              <TableCell align="center"><Typography variant="h6">Actions</Typography></TableCell>
+              <TableCell><Typography variant="subtitle1">Name</Typography></TableCell>
+              <TableCell align="center"><Typography variant="subtitle1">UserName</Typography></TableCell>
+              <TableCell align="center"><Typography variant="subtitle1">Email</Typography></TableCell>
+              <TableCell align="center"><Typography variant="subtitle1">Phone</Typography></TableCell>
+              <TableCell align="center"><Typography variant="subtitle1">User Type</Typography></TableCell>
+              <TableCell align="center"><Typography variant="subtitle1">Actions</Typography></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users ? users.filter((u) => !u.isDeleted).map((row) => (
-              <TableRow key={row.name}>
-                <TableCell component="th" scope="row"><Typography variant="h6">{row.name}</Typography></TableCell>
-                <TableCell align="center"><Typography variant="h6">{row.email}</Typography></TableCell>
-                <TableCell align="center"><Typography variant="h6">{row.phone}</Typography></TableCell>
+            {users ? users.filter((u) => !u.isDeleted && (userTypeFilter === -1 || userTypeFilter === u.userType)).map((row) => (
+              <TableRow key={row.userName}>
+                <TableCell component="th" scope="row"><Typography variant="subtitle1">{row.name}</Typography></TableCell>
+                <TableCell align="center"><Typography variant="subtitle1">{row.username}</Typography></TableCell>
+                <TableCell align="center"><Typography variant="subtitle1">{row.email}</Typography></TableCell>
+                <TableCell align="center"><Typography variant="subtitle1">{row.phone}</Typography></TableCell>
+                <TableCell align="center"><Typography variant="subtitle1">{userTypes[row.userType]}</Typography></TableCell>
                 <TableCell align="center">
                   <Switch
                     checked={row.isEnabled}
@@ -243,6 +294,9 @@ function UserManagement() {
         </IconButton>
         <Paper className={clsx(classes.formBox, 'fragment-fadeUp')}>
           <div className={classes.fullFromWrap}>
+            <center>
+              <Typography variant="h3" color="primary">User Management</Typography>
+            </center>
             <div className={classes.form}>
               { _renderForm() }
             </div>
