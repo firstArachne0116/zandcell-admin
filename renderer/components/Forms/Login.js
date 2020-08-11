@@ -32,7 +32,7 @@ function Login(props) {
   const apiIsBusy = useSelector(state => state.main.apiReducer.isBusy);
 
   const onSignSuccess = () => {
-    router.push('/dashboard');
+    router.push('/check-request');
   };
 
   useEffect(() => {

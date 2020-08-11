@@ -33,6 +33,8 @@ import TimelineContent from '@material-ui/lab/TimelineContent';
 import TimelineDot from '@material-ui/lab/TimelineDot';
 import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
 
+import GetAppIcon from '@material-ui/icons/GetApp';
+
 import { useDispatch, useSelector } from 'react-redux';
 import download from 'downloadjs';
 
@@ -123,7 +125,13 @@ function Document() {
     const x = new XMLHttpRequest();
     x.open('GET', config.uploadUrl + file.fileName, true);
     x.responseType = 'blob';
-    x.onload = () => download(x.response, file.name);
+    x.onload = () => {
+      if (x.status === 200) {
+        download(x.response, file.name);
+      } else {
+        dispatch(Actions.showNotification('Something went wrong.'));
+      }
+    };
     x.send();
   };
 
@@ -182,6 +190,7 @@ function Document() {
     return (
       <div>
         <Box p={0} pt={0}>
+          <Divider />
           <div className={classes.tabContainer}>
             <Tabs
               orientation="vertical"
@@ -206,10 +215,12 @@ function Document() {
                         <Grid container direction="row" justify="space-between">
                           <Grid item>
                             <Typography variant="subtitle1">
-                              {doc.name}
-                              {' ( '}
-                              {doc.status.slice(0, 1).toUpperCase() + doc.status.slice(1, doc.status.length)}
-                              {' )'}
+                              <b>
+                                {doc.name}
+                                {' ( '}
+                                {doc.status.slice(0, 1).toUpperCase() + doc.status.slice(1, doc.status.length)}
+                                {' )'}
+                              </b>
                             </Typography>
                           </Grid>
                           {doc.status.toLowerCase() === 'pending' ? (
@@ -224,10 +235,10 @@ function Document() {
                         <Typography variant="subtitle2">{doc.description}</Typography>
                       </Box>
                       <Box m={2} mt={0}>
-                        <Typography variant="subtitle1">Activity</Typography>
+                        <Typography variant="subtitle1"><b>Activity</b></Typography>
                       </Box>
                       <Timeline align="alternate">
-                        {comments.map((comment, index1) => {
+                        {comments.filter((comment) => comment.referId === doc._id).map((comment, index1) => {
                           if (index1 % 2 === 0) {
                             return (
                               <TimelineItem key={'comment' + index1}>
@@ -286,9 +297,10 @@ function Document() {
                       <Box component="div" className={classes.listBorder}>
                         <List component="nav" className={classes.fileList} aria-label="mailbox folders">
                           {
-                            files.map((file, fileIndex) => (
+                            files.filter((file) => file.documentId === doc._id).map((file, fileIndex) => (
                               <ListItem button divider key={'Download Link -- ' + fileIndex} onClick={() => downloadFile(file)}>
                                 <ListItemText primary={file.name} />
+                                <GetAppIcon />
                               </ListItem>
                             ))
                           }
@@ -347,28 +359,28 @@ function Document() {
                   <table>
                     <tbody>
                       <tr>
-                        <td style={{ textAlign: 'justify', minWidth: 100 }}>User</td>
+                        <td style={{ textAlign: 'justify', minWidth: 100 }}><b>User</b></td>
                         <td style={{ textAlign: 'left' }}>
                           {'   :   '}
                           {currentRequest.userName}
                         </td>
                       </tr>
                       <tr>
-                        <td style={{ textAlign: 'justify', minWidth: 100 }}>Product</td>
+                        <td style={{ textAlign: 'justify', minWidth: 100 }}><b>Product</b></td>
                         <td style={{ textAlign: 'left' }}>
                           {'   :   '}
                           {currentRequest.productName}
                         </td>
                       </tr>
                       <tr>
-                        <td style={{ textAlign: 'justify', minWidth: 100 }}>Model</td>
+                        <td style={{ textAlign: 'justify', minWidth: 100 }}><b>Model</b></td>
                         <td style={{ textAlign: 'left' }}>
                           {'   :   '}
                           {currentRequest.model}
                         </td>
                       </tr>
                       <tr>
-                        <td style={{ textAlign: 'justify', minWidth: 100 }}>Quantity</td>
+                        <td style={{ textAlign: 'justify', minWidth: 100 }}><b>Quantity</b></td>
                         <td style={{ textAlign: 'left' }}>
                           {'   :   '}
                           {currentRequest.quantity}
@@ -381,7 +393,7 @@ function Document() {
                   <table>
                     <tbody>
                       <tr>
-                        <td style={{ textAlign: 'justify', minWidth: 100 }}>Price</td>
+                        <td style={{ textAlign: 'justify', minWidth: 100 }}><b>Price</b></td>
                         <td style={{ textAlign: 'left' }}>
                           {'   :   '}
                           {currentRequest.priceMin}
@@ -389,21 +401,21 @@ function Document() {
                         </td>
                       </tr>
                       <tr>
-                        <td style={{ textAlign: 'justify', minWidth: 100 }}>Commission</td>
+                        <td style={{ textAlign: 'justify', minWidth: 100 }}><b>Commission</b></td>
                         <td style={{ textAlign: 'left' }}>
                           {'   :   '}
                           {currentRequest.commission}
                         </td>
                       </tr>
                       <tr>
-                        <td style={{ textAlign: 'justify', minWidth: 100 }}>Delivery</td>
+                        <td style={{ textAlign: 'justify', minWidth: 100 }}><b>Delivery</b></td>
                         <td style={{ textAlign: 'left' }}>
                           {'   :   '}
                           {currentRequest.deliveryLocation}
                         </td>
                       </tr>
                       <tr>
-                        <td style={{ textAlign: 'justify', minWidth: 100 }}>Created At</td>
+                        <td style={{ textAlign: 'justify', minWidth: 100 }}><b>Created At</b></td>
                         <td style={{ textAlign: 'left' }}>
                           {'   :   '}
                           {currentRequest.createdAt.slice(0, 10)}
@@ -414,7 +426,7 @@ function Document() {
                 </Grid>
                 <Grid item lg={4} sm={12}>
                   <Typography variant="subtitle2" name="description">
-                    Description
+                    <b>Description</b>
                   </Typography>
                   {currentRequest.description}
                 </Grid>

@@ -32,7 +32,7 @@ function Error(props) {
               <Typography>
                 {t('common:404_subtitle')}
               </Typography>
-              <Button variant="contained" color="primary" href="/dashboard" className={classes.button}>
+              <Button variant="contained" color="primary" href="/check-request" className={classes.button}>
                 {t('common:back')}
               </Button>
             </div>

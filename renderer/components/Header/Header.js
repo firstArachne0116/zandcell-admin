@@ -105,18 +105,18 @@ function Header(props) {
                   currentClassName="active"
                 >
                   <li>
-                    <Button href="/user-management">
-                      User Management
+                    <Button style={{ color: 'white' }} href="/check-request">
+                      Requests
                     </Button>
                   </li>
                   <li>
-                    <Button href="/doctype-management">
-                      Document Type Management
+                    <Button style={{ color: 'white' }} href="/user-management">
+                      Users
                     </Button>
                   </li>
                   <li>
-                    <Button href="/check-request">
-                      Request Management
+                    <Button style={{ color: 'white' }} href="/doctype-management">
+                      Document Types
                     </Button>
                   </li>
                 </Scrollspy>

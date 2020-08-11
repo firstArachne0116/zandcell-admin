@@ -188,7 +188,7 @@ function DocTypeManagement() {
   );
 
   const _renderDocTypeSettingForm = () => (
-    <Box p={2} component={Paper}>
+    <Box p={2}>
       <Grid container direction="row" justify="space-between">
         <Grid item>
           {/*  */}

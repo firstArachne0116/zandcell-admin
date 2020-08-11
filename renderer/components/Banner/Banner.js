@@ -4,7 +4,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import {
   Container,
-  Snackbar
+  Snackbar,
+  CircularProgress,
+  Box,
+  Typography
 } from '@material-ui/core';
 // import Grid from '@material-ui/core/Grid';
 import { useSelector, useDispatch } from 'react-redux';
@@ -36,7 +39,7 @@ function Banner() {
   const dispatch = useDispatch();
 
   const requests = useSelector(state => state.main.requestReducer.requests);
-  const allDocuments = useSelector(state => state.main.requestReducer.allDocuments);
+  const documents = useSelector(state => state.main.requestReducer.allDocuments);
 
   const [pageLoadingState, setPageLoadingState] = useState(false);
   const [openNotif, setNotif] = useState(false);
@@ -46,7 +49,6 @@ function Banner() {
     if (!pageLoadingState) {
       console.log('load page data');
       dispatch(Actions.getAllRequests('all', 'pending'));
-      dispatch(Actions.getAllDocuments());
     }
   }, []);
 
@@ -57,11 +59,11 @@ function Banner() {
   }, [pageLoadingState]);
 
   useEffect(() => {
-    if (!pageLoadingState && requests && allDocuments) {
+    if (!pageLoadingState && requests && documents) {
       console.log(requests);
       setPageLoadingState(true);
     }
-  }, [requests, allDocuments]);
+  }, [requests, documents]);
 
   const handleClose = () => {
     setNotif(false);
@@ -80,12 +82,60 @@ function Banner() {
   //   for (let i = 0; i < len; i++) if (documents[i].requestId === reqId && documents[i].status === 'pending') pendingCnt++;
   //   return pendingCnt;
   // };
+  const _renderRequestsDetail = (title, filteredRequests) => {
+    console.log(filteredRequests);
+    return (
+      <Box m={3}>
+        <Typography>{title}</Typography>
+        <Box ml={3}>
+          {filteredRequests.map((req) => (
+            <Typography key={req._id}>
+              {req.userName}
+              {' requested '}
+              {req.requestType ? 'sell' : 'buy'}
+              {' request on '}
+              {'' + (new Date(req.createdAt) + '.')}
+              {'('}
+            </Typography>
+          ))}
+        </Box>
+      </Box>
+    );
+  };
 
   const _renderRequests = () => {
-    if (requests.length) {
+    if (!pageLoadingState) {
+      return (
+        <div>
+          <CircularProgress />
+        </div>
+      );
+    }
+    if (requests && requests.length) {
+      let sortedRquests = requests;
+      sortedRquests.sort((a, b) => {
+        if (a.createdAt === b.createdAt) return 0;
+        if (a.createdAt < b.createdAt) return 1;
+        return -1;
+      });
+      console.log(sortedRquests);
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const oneDay = 24 * 60 * 60 * 1000;
+      sortedRquests = sortedRquests.map((req) => {
+        const reqDateTime = new Date(req.createdAt);
+        const reqDate = new Date(reqDateTime.getFullYear(), reqDateTime.getMonth(), reqDateTime.getDate());
+        const diffDays = Math.round(Math.abs((today - reqDate) / oneDay));
+        return { ...req, diffDays };
+      });
       return (
         <Container className={classes.tableRoot}>
-          {/*  */}
+          {sortedRquests.filter((req) => req.diffDays === 0).length
+            ? _renderRequestsDetail('Earlier Today', sortedRquests.filter((req) => req.diffDays === 0)) : <></>}
+          {sortedRquests.filter((req) => req.diffDays === 1).length
+            ? _renderRequestsDetail('Yesterday', sortedRquests.filter((req) => req.diffDays === 1)) : <></>}
+          {sortedRquests.filter((req) => req.diffDays > 1 && req.diffDays < 7).length
+            ? _renderRequestsDetail('This week', sortedRquests.filter((req) => req.diffDays > 1 && req.diffDays < 7)) : <></>}
         </Container>
       );
     }
@@ -130,8 +180,14 @@ function Banner() {
         }}
         message={<span id="message-id">Message Sent</span>}
       />
-      <Container fixed>
-        {_renderRequests()}
+      <Container maxWidth="xl" className={classes.innerWrap}>
+        <Box pt={30}>
+          <div className={classes.fullFromWrap}>
+            <div className={classes.form}>
+              {_renderRequests()}
+            </div>
+          </div>
+        </Box>
       </Container>
     </div>
   );

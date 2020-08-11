@@ -34,7 +34,7 @@ import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import { useDispatch } from 'react-redux';
 
-import routeLink from '../../static/text/link';
+// import routeLink from '../../static/text/link';
 import { withTranslation } from '../../i18n';
 import { useText } from '../../theme/common';
 import Parallax from '../Parallax/Hexagonal';
@@ -370,10 +370,10 @@ function NewRequest() {
         message={<span id="message-id">Message Sent</span>}
       />
       <Container maxWidth="xl" className={classes.innerWrap}>
-        <IconButton href={routeLink.crypto.home} className={clsx(classes.backtohome, classes.invert)}>
+        {/* <IconButton href={routeLink.crypto.home} className={clsx(classes.backtohome, classes.invert)}>
           <i className="ion-ios-home-outline" />
           <i className="ion-ios-arrow-thin-left" />
-        </IconButton>
+        </IconButton> */}
         <Paper className={clsx(classes.formBox, 'fragment-fadeUp')}>
           <div className={classes.fullFromWrap}>
             <Typography

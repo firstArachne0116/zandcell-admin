@@ -45,6 +45,13 @@ const requestReducer = (state = initialState, action) => {
         ...state, requests: action.payload
       };
     }
+    case Actions.SET_ALL_DOCUMENTS:
+    {
+      console.log('[Reducer] ACCEPT_DOC', action.payload);
+      return {
+        ...state, allDocuments: action.payload
+      };
+    }
     default:
     {
       return state;

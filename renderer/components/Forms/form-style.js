@@ -4,6 +4,8 @@ import { fade, darken } from '@material-ui/core/styles/colorManipulator';
 const contactStyles = makeStyles(theme => ({
   title: {},
   pageWrap: {
+    backgroundColor: 'darkgreen',
+    minHeight: '100vh',
     padding: theme.spacing(11, 5),
     position: 'relative',
     textAlign: 'center',
@@ -94,13 +96,13 @@ const contactStyles = makeStyles(theme => ({
   form: {
     textAlign: 'left',
     position: 'relative',
-    padding: theme.spacing(0, 15, 10),
+    padding: theme.spacing(0, 10, 5),
     marginTop: theme.spacing(8),
     [theme.breakpoints.down('sm')]: {
-      padding: theme.spacing(0, 6, 10),
+      padding: theme.spacing(0, 4, 5),
     },
     [theme.breakpoints.down('xs')]: {
-      padding: theme.spacing(0, 2, 10),
+      padding: theme.spacing(0, 2, 5),
     },
   },
   formHelper: {

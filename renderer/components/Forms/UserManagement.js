@@ -177,7 +177,7 @@ function UserManagement() {
   );
 
   const _renderUserSettingForm = () => (
-    <Box p={2} component={Paper}>
+    <Box p={2}>
       <Grid container direction="row" justify="space-between">
         <Grid item>
           <Box m={3}>
@@ -225,7 +225,11 @@ function UserManagement() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users ? users.filter((u) => !u.isDeleted && (userTypeFilter === -1 || userTypeFilter === u.userType)).map((row) => (
+            {users ? users.filter((u) => !u.isDeleted && (userTypeFilter === -1 || userTypeFilter === u.userType)).sort((a, b) => {
+              if (a.userType === b.userType) return 0;
+              if (a.userType > b.userType) return 1;
+              return -1;
+            }).map((row) => (
               <TableRow key={row.userName}>
                 <TableCell component="th" scope="row"><Typography variant="subtitle1">{row.name}</Typography></TableCell>
                 <TableCell align="center"><Typography variant="subtitle1">{row.username}</Typography></TableCell>
